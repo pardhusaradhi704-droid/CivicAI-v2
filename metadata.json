@@ -1,0 +1,6 @@
+{
+  "name": "CivicAI",
+  "description": "AI-Powered Citizen Grievance Management Platform with smart routing, duplicate detection, image analysis, and role-based workflows.",
+  "requestFramePermissions": ["camera", "microphone", "geolocation"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
