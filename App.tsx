@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { LanguageProvider } from './context/LanguageContext';
+import { LanguageProvider } from './LanguageContext';
 import { Header } from './components/common/Header';
 import { RoleSwitcherBar } from './components/common/RoleSwitcherBar';
 import { CitizenDashboard } from './components/citizen/CitizenDashboard';
