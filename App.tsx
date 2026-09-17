@@ -1,16 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { AdminDashboard } from './AdminDashboard';
-import { CitizenDashboard } from './components/citizen/CitizenDashboard';
 import { CivicBotChat } from './CivicBotChat';
 import { User, UserRole, Complaint } from './types';
 import { users } from './db';
-import { Sparkles } from 'lucide-react';
+import { Sparkles, Send } from 'lucide-react';
 
 export default function App() {
   const [currentUser, setCurrentUser] = useState<User | null>(users[0] || null);
-  const [activeTab, setActiveTab] = useState<string>('dashboard');
   const [complaints, setComplaints] = useState<Complaint[]>([]);
   const [isCivicBotOpen, setIsCivicBotOpen] = useState<boolean>(false);
+  
+  // Complaint form state
+  const [title, setTitle] = useState('');
+  const [category, setCategory] = useState('Sanitation');
+  const [description, setDescription] = useState('');
+  const [location, setLocation] = useState('');
+  const [submitted, setSubmitted] = useState(false);
 
   const fetchComplaints = async () => {
     if (!currentUser) return;
@@ -34,8 +39,21 @@ export default function App() {
     setCurrentUser(targetUser);
   };
 
+  const handleSubmitComplaint = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!title || !description) return;
+    setSubmitted(true);
+    setTimeout(() => {
+      setTitle('');
+      setDescription('');
+      setLocation('');
+      setSubmitted(false);
+    }, 3000);
+  };
+
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 font-sans flex flex-col antialiased">
+      {/* Header */}
       <header className="border-b border-slate-800 bg-slate-900/50 p-4 flex justify-between items-center max-w-7xl w-full mx-auto px-4">
         <h1 className="text-xl font-bold text-emerald-400">CivicAI Platform</h1>
         <div className="flex space-x-2">
@@ -54,18 +72,89 @@ export default function App() {
         </div>
       </header>
 
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 py-8">
+      {/* Main Content */}
+      <main className="flex-1 max-w-4xl w-full mx-auto px-4 py-8">
         {currentUser?.role === 'admin' ? (
           <AdminDashboard currentUser={currentUser} />
         ) : (
-          <CitizenDashboard 
-            currentUser={currentUser} 
-            complaints={complaints} 
-            onRefreshComplaints={fetchComplaints} 
-          />
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-6">
+            <div>
+              <h2 className="text-2xl font-bold text-slate-100">Submit a Grievance</h2>
+              <p className="text-slate-400 text-sm">Report civic issues directly to municipal authorities.</p>
+            </div>
+
+            {submitted && (
+              <div className="p-4 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 rounded-xl text-sm">
+                ✓ Grievance submitted successfully!
+              </div>
+            )}
+
+            <form onSubmit={handleSubmitComplaint} className="space-y-4">
+              <div>
+                <label className="block text-xs font-semibold text-slate-400 mb-1">Issue Title</label>
+                <input 
+                  type="text"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  placeholder="e.g., Pothole on Main Street"
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2 text-sm text-slate-100 focus:outline-none focus:border-emerald-500"
+                  required
+                />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-400 mb-1">Category</label>
+                  <select 
+                    value={category}
+                    onChange={(e) => setCategory(e.target.value)}
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2 text-sm text-slate-100 focus:outline-none focus:border-emerald-500"
+                  >
+                    <option>Sanitation</option>
+                    <option>Roads & Traffic</option>
+                    <option>Water Leakage</option>
+                    <option>Street Lighting</option>
+                    <option>Electricity</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-slate-400 mb-1">Location</label>
+                  <input 
+                    type="text"
+                    value={location}
+                    onChange={(e) => setLocation(e.target.value)}
+                    placeholder="Enter locality / landmark"
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2 text-sm text-slate-100 focus:outline-none focus:border-emerald-500"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-400 mb-1">Description</label>
+                <textarea 
+                  rows={4}
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  placeholder="Provide complete details about the issue..."
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2 text-sm text-slate-100 focus:outline-none focus:border-emerald-500"
+                  required
+                />
+              </div>
+
+              <button
+                type="submit"
+                className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 rounded-xl transition flex items-center justify-center space-x-2 text-sm"
+              >
+                <Send className="w-4 h-4" />
+                <span>Submit Grievance</span>
+              </button>
+            </form>
+          </div>
         )}
       </main>
 
+      {/* Floating CivicBot Button */}
       {!isCivicBotOpen && (
         <button
           onClick={() => setIsCivicBotOpen(true)}
@@ -76,6 +165,7 @@ export default function App() {
         </button>
       )}
 
+      {/* AI Chat Drawer */}
       <CivicBotChat
         isOpen={isCivicBotOpen}
         onClose={() => setIsCivicBotOpen(false)}
