@@ -12,7 +12,6 @@ import {
   ArrowLeft,
 } from 'lucide-react';
 import { ChatMessage, Complaint } from '../../types';
-import { useLanguage } from '../../context/LanguageContext';
 
 interface CivicBotChatProps {
   isOpen: boolean;
@@ -27,7 +26,7 @@ export const CivicBotChat: React.FC<CivicBotChatProps> = ({
   complaints,
   onSelectComplaint,
 }) => {
-  const { language } = useLanguage();
+  const language = 'en';
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: 'msg-1',
