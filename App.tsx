@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { AdminDashboard } from './AdminDashboard';
-import { CitizenDashboard } from './CitizenDashboard';
+import { CitizenDashboard } from './components/citizen/CitizenDashboard';
 import { CivicBotChat } from './CivicBotChat';
 import { User, UserRole, Complaint } from './types';
 import { users } from './db';
